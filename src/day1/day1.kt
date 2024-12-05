@@ -4,9 +4,9 @@ import utils.useLines
 import java.io.File
 import kotlin.math.abs
 
-val inputFile = File("src/day1", "input.txt")
+private val inputFile = File("src/day1", "input.txt")
 
-val testContent = """3   4
+private val testContent = """3   4
 4   3
 2   5
 1   3
@@ -17,14 +17,14 @@ fun main() {
     println(part2())
 }
 
-fun part2(): Int {
+private fun part2(): Int {
     val (firstList, secondList) = getLists()
     val secondOccurance = secondList.groupingBy { it }.eachCount()
 
     return firstList.sumOf { it * secondOccurance.getOrDefault(it, 0) }
 }
 
-fun part1(): Int {
+private fun part1(): Int {
     val (firstList, secondList) = getLists()
     return firstList.asSequence().sorted()
         .zip(secondList.sorted().asSequence()) { first, second -> abs(first - second) }
