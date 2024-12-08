@@ -1,6 +1,7 @@
 package day6
 
 import utils.Vector2D
+import utils.getBounds
 import utils.useLines
 import java.io.File
 
@@ -88,7 +89,7 @@ fun part2(): Int {
 fun getInput(): Triple<Vector2D, Vector2D, Set<Vector2D>> {
     return useLines(testFile, testInput, useFile = false) { lines ->
         val input = lines.toList()
-        val bounds = Vector2D(input.lastIndex, input[0].lastIndex)
+        val bounds = input.getBounds()
         val obstacles = input
             .mapIndexed { row, line ->
                 line.mapIndexed { col, value ->
