@@ -18,17 +18,6 @@ private val testContent = """............
 ............
 ............"""
 
-private val testContent2 = """T....#....
-...T......
-.T....#...
-.........#
-..#.......
-..........
-...#......
-..........
-....#.....
-.........."""
-
 private val testFile = File("src/day8", "day8.txt")
 
 
@@ -37,29 +26,25 @@ fun main() {
 }
 
 fun process(isPart2: Boolean = false): Int {
-    val (bounds, antennas) = useLines(testFile, testContent, useFile = true) {
+    val (bounds, antennas) = useLines(testFile, testContent, useFile = false) {
         val input = it.toList()
-        val antennas = input.mapIndexed { row, line ->
-            line.mapIndexed { col, frequency ->
-                if (frequency == '.' || frequency == '#') null
-                else Antenna(frequency, Vector2D(row, col))
+        val antennas = buildMap<Char, MutableList<Vector2D>> {
+            for (rowI in input.indices) {
+                for (colI in input.indices) {
+                    val frequency = input[rowI][colI]
+                    if (frequency == '.' || frequency == '#') continue
+
+                    getOrPut(frequency) { mutableListOf() }.add(Vector2D(rowI, colI))
+                }
             }
-        }.flatten()
-            .filterNotNull()
-            .toList()
+        }
         val bounds = input.getBounds()
 
         (bounds to antennas)
     }
 
-    val positionsPerFrequency = antennas.groupBy({ it.frequency }) { it.position }
-    /* antennas.groupingBy { it.frequency }.fold({ _, _ -> mutableSetOf<Vector2D>() }) { _, acc, antenna ->
-         acc.add(antenna.position)
-         acc
-     }*/
-
     val antiNodes = buildSet {
-        for (sameFrequencyPositions in positionsPerFrequency.values) {
+        for (sameFrequencyPositions in antennas.values) {
             addAll(sameFrequencyPositions)
             for (posI in sameFrequencyPositions.indices) {
                 val pos = sameFrequencyPositions[posI]
@@ -93,27 +78,18 @@ fun Vector2D.antiNodesFor(other: Vector2D, bounds: Vector2D, repeat: Boolean = f
         }
 
         if (repeat) {
-            while (true) {
-                prev -= diff
-                if (prev.isOutOf(bounds)) {
-                    break;
+            yieldAll(sequence {
+                while (true) {
+                    prev -= diff
+                    yield(prev)
                 }
-                yield(prev)
-            }
-            while (true) {
-                next += diff
-                if (next.isOutOf(bounds)) {
-                    break;
+            }.takeWhile { !it.isOutOf(bounds) })
+            yieldAll(sequence {
+                while (true) {
+                    next += diff
+                    yield(next)
                 }
-                yield(next)
-            }
+            }.takeWhile { !it.isOutOf(bounds) })
         }
     }
-}
-
-inline class Antenna private constructor(private val v: Pair<Char, Vector2D>) {
-    val frequency get() = v.first
-    val position get() = v.second
-
-    constructor(frequency: Char, position: Vector2D) : this(frequency to position)
 }
