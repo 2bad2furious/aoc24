@@ -10,7 +10,11 @@ inline class Vector2D private constructor(private val v: Pair<Int, Int>) {
         return Vector2D(v.first + other.v.first, v.second + other.v.second)
     }
 
+    operator fun minus(other: Vector2D): Vector2D {
+        return Vector2D(v.first - other.v.first, v.second - other.v.second)
+    }
+
     fun isOutOf(bounds: Vector2D): Boolean {
-        return row == -1 || col == -1 || row > bounds.row || col > bounds.col
+        return row <= -1 || col <= -1 || row > bounds.row || col > bounds.col
     }
 }
