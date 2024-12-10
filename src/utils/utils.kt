@@ -15,6 +15,11 @@ fun <T> List<T>.withoutIndex(index: Int): List<T> {
     return filterIndexed { i, _ -> i != index }
 }
 
+@JvmName("getBoundsForListOfStrings")
 fun List<String>.getBounds(): Vector2D {
+    return Vector2D(lastIndex, this[0].lastIndex)
+}
+
+fun List<List<*>>.getBounds(): Vector2D {
     return Vector2D(lastIndex, this[0].lastIndex)
 }
